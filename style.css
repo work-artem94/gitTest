@@ -4,7 +4,7 @@ display:flex;
 }
 .layer1
 {
-border: 12px red solid;
+border: 12px #0adb2d solid;
 border-radius:15px;	
 width:400pt;
 height:200pt;
