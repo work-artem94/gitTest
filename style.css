@@ -40,4 +40,7 @@ height:300pt;
 {
 display:flex;	
 }
-
+.newBranch{
+    font-style: italic;
+    color:#666666;
+}
