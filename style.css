@@ -1,0 +1,43 @@
+.layer
+{
+display:flex;	
+}
+.layer1
+{
+border: 12px red solid;
+border-radius:15px;	
+width:400pt;
+height:200pt;
+}
+.layer2
+{
+border: 2px yellow solid;
+border-radius:15px;
+width:400pt;
+height:200pt;	
+}
+.layer3
+{
+border: 2px blue solid;
+border-radius:15px;	
+width:400pt;
+height:200pt;
+}
+.big
+{
+width:700pt;
+height:400pt;
+position:relative;	
+transition-duration: 2s;
+z-index: 5;
+}
+img
+{
+width:300pt;
+height:300pt;	
+}
+.pic
+{
+display:flex;	
+}
+
