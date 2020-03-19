@@ -14,10 +14,18 @@
     secondaryCanvas.width = primaryCanvas.width; //дублируем ширину главного полотна
     secondaryCanvas.height = primaryCanvas.height; //дублируем высоту главного полотна
 
-    const squares = [];
-    const colors = ['black','red','green','orange'];
+    const squares = []; //здесь будут храниться экземляры класса Square. Количество определяем в numberOfSquares ниже
 
-    //создаем класс Квадрат
+//--------------------------------------------------------------------------//
+    //Настройка квадратов на поле
+    const colors = ['black','red','green','orange', 'blue']; //массив цветов квадрата
+    var numberOfSquares = 20; // количество квадратов
+    var minSquareSize = 2; // минимальный размер квадрата (px)
+    var maxSquareSize = 20; // максимальный размер квадрата (px)
+//--------------------------------------------------------------------------//
+
+
+    //создаем класс Square
     class Square {
       constructor(x, y, dx, dy, size, color) {
             this.x = x; //начало отрисовки по оси х
@@ -28,14 +36,14 @@
             this.color = color; // цвет квадрата
       }
 
-      //функция, которая создает экземляр класса Квадрат
+      //функция, которая создает экземляр класса Square
       static createSquare() {
         return new Square(
-          getRandomArbitrary(0, secondaryCanvas.width-10),
-          getRandomArbitrary(0, secondaryCanvas.height-10),
+          getRandomArbitrary(0, secondaryCanvas.width-maxSquareSize),
+          getRandomArbitrary(0, secondaryCanvas.height-maxSquareSize),
           getRandomArbitrary(-5, 5),
           getRandomArbitrary(-5, 5),
-          10,
+          getRandomArbitrary(minSquareSize, maxSquareSize),
           colors[getRandomIntInclusive(1, colors.length)-1],
           )
       }
@@ -43,10 +51,9 @@
 
     //функция создает экземляры класса с различными стартовыми позициями
     function newSquare(){
-      for(var i=0;i<20;i++){
+      for(var i=0;i<numberOfSquares;i++){
         squares.push(Square.createSquare());
       }
-      console.log(squares);
     }
     newSquare();
 
