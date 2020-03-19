@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <script type="application/javascript">
+  function all()
+  {
+    const primaryCanvas = document.getElementById("canvas"),
+        primaryCtx = primaryCanvas.getContext("2d");
+
+    const secondaryCanvas = document.createElement("canvas"),
+        secondaryCtx = secondaryCanvas.getContext("2d");
+
+    secondaryCanvas.width = primaryCanvas.width; //дублируем ширину главного полотна
+    secondaryCanvas.height = primaryCanvas.height; //дублируем высоту главного полотна
+
+    const squares = [];
+    const colors = ['black','red','green','orange'];
+
+    //создаем класс Квадрат
+    class Square {
+      constructor(x, y, dx, dy, size, color) {
+            this.x = x; //начало отрисовки по оси х
+            this.y = y; //начало отрисовки по оси у
+            this.dx = dx; //смещение по оси х
+            this.dy = dy; //смещение по оси у
+            this.size = size; // размер квадрата
+            this.color = color; // цвет квадрата
+      }
+
+      //функция, которая создает экземляр класса Квадрат
+      static createSquare() {
+        return new Square(
+          getRandomArbitrary(0, secondaryCanvas.width-10),
+          getRandomArbitrary(0, secondaryCanvas.height-10),
+          getRandomArbitrary(-5, 5),
+          getRandomArbitrary(-5, 5),
+          10,
+          colors[getRandomIntInclusive(1, colors.length)-1],
+          )
+      }
+    };
+
+    //функция создает экземляры класса с различными стартовыми позициями
+    function newSquare(){
+      for(var i=0;i<20;i++){
+        squares.push(Square.createSquare());
+      }
+      console.log(squares);
+    }
+    newSquare();
+
+    //функция рандомного диапазона float
+    function getRandomArbitrary(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    //функция рандомного диапазона int
+    function getRandomIntInclusive(min, max) {
+      // случайное число от min до (max+1)
+      let rand = min + Math.random() * (max + 1 - min);
+      return Math.floor(rand);
+    }
+
+    //функция рисования квадрата
+    function drawFrame() {
+        requestAnimationFrame(drawFrame); //отрисовка
+        //secondaryCtx.clearRect(0, 0, secondaryCanvas.width, secondaryCanvas.height); //очистить весь холст
+        
+        secondaryCtx.fillStyle = 'white'; //очистить весь холст (делаем квадрат белым)
+        secondaryCtx.fillRect(0, 0, secondaryCanvas.width, secondaryCanvas.height); //очистить весь холст (растягиваем на всю ширину и длину)
+
+        for(let i=0; i<squares.length; i++){
+
+          secondaryCtx.fillStyle = squares[i].color;
+          secondaryCtx.fillRect(squares[i].x, squares[i].y, squares[i].size, squares[i].size);
+
+         if(squares[i].x + squares[i].dx > secondaryCanvas.width-squares[i].size || squares[i].x + squares[i].dx < 0) {
+              squares[i].dx = -squares[i].dx;
+              squares[i].color = colors[getRandomIntInclusive(1, colors.length)-1];
+          }
+          if(squares[i].y + squares[i].dy > secondaryCanvas.height-squares[i].size || squares[i].y + squares[i].dy < 0) {
+              squares[i].dy = -squares[i].dy;
+              squares[i].color = colors[getRandomIntInclusive(1, colors.length)-1];
+          }
+
+          squares[i].x += squares[i].dx;
+          squares[i].y += squares[i].dy;
+
+          primaryCtx.drawImage(secondaryCanvas, 0, 0);
+
+        }      
+    }
+
+    drawFrame();
+
+  }
+  </script>
+  <style type="text/css">
+      canvas { border: 1px solid black; background: #fff;}
+    </style>
+ </head>
+ <body onload="all();">
+   <canvas id="canvas" width="200" height="300"></canvas>
+ </body>
+</html>
