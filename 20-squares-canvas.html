@@ -19,9 +19,15 @@
 //--------------------------------------------------------------------------//
     //Настройка квадратов на поле
     const colors = ['black','red','green','orange', 'blue']; //массив цветов квадрата
-    var numberOfSquares = 20; // количество квадратов
-    var minSquareSize = 2; // минимальный размер квадрата (px)
-    var maxSquareSize = 20; // максимальный размер квадрата (px)
+    const numberOfSquares = 20; // количество квадратов
+    const minSquareSize = 2; // минимальный размер квадрата (px)
+    const maxSquareSize = 20; // максимальный размер квадрата (px)
+
+    const minSquareTickX = -5; //минимальное смещение по оси Х за кадр (может быть отрицательным);
+    const maxSquareTickX = 5; //минимальное смещение по оси Х за кадр (может быть отрицательным);
+    const minSquareTickY = -5; //минимальное смещение по оси Y за кадр (может быть отрицательным);
+    const maxSquareTickY = 5; //минимальное смещение по оси Y за кадр (может быть отрицательным);
+
 //--------------------------------------------------------------------------//
 
 
@@ -36,13 +42,14 @@
             this.color = color; // цвет квадрата
       }
 
-      //функция, которая создает экземляр класса Square
+      // метод, который создает экземляр класса Square
+      //(!)Cтатические методы вызываются через имя класса. Вызывать статические методы через имя объекта запрещено. Статические методы часто используются для создания вспомогательных функций приложения.
       static createSquare() {
         return new Square(
           getRandomArbitrary(0, secondaryCanvas.width-maxSquareSize),
           getRandomArbitrary(0, secondaryCanvas.height-maxSquareSize),
-          getRandomArbitrary(-5, 5),
-          getRandomArbitrary(-5, 5),
+          getRandomArbitrary(minSquareTickX, maxSquareTickY),
+          getRandomArbitrary(minSquareTickY, maxSquareTickY),
           getRandomArbitrary(minSquareSize, maxSquareSize),
           colors[getRandomIntInclusive(1, colors.length)-1],
           )
@@ -50,12 +57,12 @@
     };
 
     //функция создает экземляры класса с различными стартовыми позициями
-    function newSquare(){
+    function initSquares(){
       for(var i=0;i<numberOfSquares;i++){
         squares.push(Square.createSquare());
       }
     }
-    newSquare();
+    initSquares();
 
     //функция рандомного диапазона float
     function getRandomArbitrary(min, max) {
