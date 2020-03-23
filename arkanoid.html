@@ -112,6 +112,50 @@
     }
 //--------------------------------------------------------------------------//
 
+
+//--------------------------------------------------------------------------//
+
+    var blocks = [
+      [true, true, true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true, true, true],
+      [true, true, true, true, false, true, true, true, true, true],
+      [true, false, true, false, true, false, true, false, true, false],
+    ];
+
+
+    var blockHeight = 15;
+
+    function drawBlocks(){
+      //создаем функцию отрисовки платформы
+      function drawBlock(x, y, w, h, color){
+          secondaryCtx.fillStyle = color;
+          secondaryCtx.fillRect(x, y, w, h);
+      }
+
+      for (let y = 0; y < blocks.length; y++) {
+        for (let x = 0; x < blocks[y].length; x++) {
+          if (blocks[y][x]===true){
+            drawBlock(
+              x * secondaryCanvas.width/blocks[y].length,
+              y * blockHeight, secondaryCanvas.width/blocks[y].length,
+              blockHeight,
+              'rgba(0,0,0)'
+              );
+          }
+          else{
+            drawBlock(
+              x * secondaryCanvas.width/blocks[y].length,
+              y * blockHeight, secondaryCanvas.width/blocks[y].length,
+              blockHeight,
+              'white'
+              );
+          }
+        }
+      }
+    }
+
+//--------------------------------------------------------------------------//
     //функция рандомного диапазона float
     function getRandomArbitrary(min, max) {
       return Math.random() * (max - min) + min;
@@ -131,7 +175,8 @@
         
         secondaryCtx.fillStyle = 'white'; //очистить весь холст (делаем квадрат белым)
         secondaryCtx.fillRect(0, 0, secondaryCanvas.width, secondaryCanvas.height); //очистить весь холст (растягиваем на всю ширину и длину)
-
+        
+        drawBlocks(); // отрисовываем верхние блоки
         drawPlatform(); //отрисовываем платформу
 
 //--------------------------------------------------------------------------//
@@ -181,6 +226,14 @@
               squares[i].dy = -squares[i].dy;
           }
             //--------------------------------------------------------------------------//
+
+          /*for (let y = 0; y < blocks.length; y++){
+            for (let x = 0; x < blocks[y].length; x++){
+              if (blocks[y][x]===true){
+
+              }
+            }
+          }*/
 
           squares[i].x += squares[i].dx;
           squares[i].y += squares[i].dy;
