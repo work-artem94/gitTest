@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <script type="application/javascript">
+  function all()
+  {
+    const primaryCanvas = document.getElementById("canvas"),
+        primaryCtx = primaryCanvas.getContext("2d");
+
+    const secondaryCanvas = document.createElement("canvas"),
+        secondaryCtx = secondaryCanvas.getContext("2d");
+
+    secondaryCanvas.width = primaryCanvas.width; //дублируем ширину главного полотна
+    secondaryCanvas.height = primaryCanvas.height; //дублируем высоту главного полотна
+
+    const squares = []; //здесь будут храниться экземляры класса Square. Количество определяем в numberOfSquares ниже
+
+//--------------------------------------------------------------------------//
+    //Настройка квадратов на поле
+    const colors = ['black','red','green','orange', 'blue']; //массив цветов квадрата
+    const numberOfSquares = 1; // количество квадратов
+    const minSquareSize = 2; // минимальный размер квадрата (px)
+    const maxSquareSize = 20; // максимальный размер квадрата (px)
+
+    const minSquareTickX = -5; //минимальное смещение по оси Х за кадр (может быть отрицательным);
+    const maxSquareTickX = 5; //минимальное смещение по оси Х за кадр (может быть отрицательным);
+    const minSquareTickY = -5; //минимальное смещение по оси Y за кадр (может быть отрицательным);
+    const maxSquareTickY = 5; //минимальное смещение по оси Y за кадр (может быть отрицательным);
+
+//--------------------------------------------------------------------------//
+
+
+    //создаем класс Square
+    class Square {
+      constructor(x, y, dx, dy, size, color) {
+            this.x = x; //начало отрисовки по оси х
+            this.y = y; //начало отрисовки по оси у
+            this.dx = dx; //смещение по оси х
+            this.dy = dy; //смещение по оси у
+            this.size = size; // размер квадрата
+            this.color = color; // цвет квадрата
+      }
+
+      // метод, который создает экземляр класса Square
+      //(!)Cтатические методы вызываются через имя класса. Вызывать статические методы через имя объекта запрещено. Статические методы часто используются для создания вспомогательных функций приложения.
+      static createSquare() {
+        return new Square(
+          getRandomArbitrary(0, secondaryCanvas.width-maxSquareSize),
+          getRandomArbitrary(0, secondaryCanvas.height-maxSquareSize),
+          getRandomArbitrary(minSquareTickX, maxSquareTickY),
+          getRandomArbitrary(minSquareTickY, maxSquareTickY),
+          getRandomArbitrary(minSquareSize, maxSquareSize),
+          colors[getRandomIntInclusive(1, colors.length)-1],
+          )
+      }
+    };
+
+    //функция создает экземляры класса с различными стартовыми позициями
+    function initSquares(){
+      for(var i=0;i<numberOfSquares;i++){
+        squares.push(Square.createSquare());
+      }
+    }
+    initSquares();
+
+    //создаем функцию отрисовки квадрата с аргументом, позволяющим выбрать массив square (для перебора значений в цикле)
+    function drawSquare(squaresArray){
+          secondaryCtx.fillStyle = squaresArray.color;
+          secondaryCtx.fillRect(squaresArray.x, squaresArray.y, squaresArray.size, squaresArray.size);
+    }
+//--------------------------------------------------------------------------//
+    //создаем обьект platform
+    var platform = {
+        x: secondaryCanvas.width/2, //начало отрисовки по оси х
+        y: secondaryCanvas.height, //начало отрисовки по оси у
+        dx: 5, //скорость движения платформы
+        width: 50, // ширина
+        height: 25, // высота
+        color: 'black' //цвет
+    }
+
+    var rightPressed = false; //создаем флаг нажатия клавиши вправо (код клавиши - 39)
+    var leftPressed = false; // создаем флаг нажатия клавиши влево (код клавиши - 37)
+
+    //создаем событие document.onkeydown с аргументом e - код кнопки
+    //пока зажата кнопка -> содержимое работает
+    document.onkeydown = (e) => {
+      if(e.keyCode == 39) {
+        rightPressed = true;
+      }
+       else if(e.keyCode == 37) {
+        leftPressed = true;
+      }
+    };
+
+    //создаем событие document.onkeyup с аргументом e - код кнопки
+    //пока зажата кнопка <- содержимое работает
+    document.onkeyup = (e) => {
+      if(e.keyCode == 39) {
+        rightPressed = false;
+      }
+       else if(e.keyCode == 37) {
+        leftPressed = false;
+      }
+    };
+
+    //движение платформы по курсору мыши
+    document.addEventListener("mousemove", mouseMoveHandler, false);
+
+    function mouseMoveHandler(e) {
+      //relativeX - равно горизонтальному положению мыши в окне браузера ( e.clientX ) минус расстояние между левым краем канвы и левым краем окна браузера ( canvas.offsetLeft )
+      var relativeX = e.clientX - primaryCanvas.offsetLeft + 125;
+      if(relativeX > platform.width && relativeX < primaryCanvas.width) {
+        platform.x = relativeX - platform.width/2;
+        console.log(primaryCanvas.offsetLeft);
+      }
+    }
+
+
+
+    //создаем функцию отрисовки платформы
+    function drawPlatform(){
+        secondaryCtx.fillStyle = platform.color;
+        secondaryCtx.fillRect(platform.x-platform.width/2, platform.y-platform.height, platform.width, platform.height);
+    }
+//--------------------------------------------------------------------------//
+
+
+//--------------------------------------------------------------------------//
+
+    var blocks = [];
+    //var blocksCounter = 5;
+
+    var blocksCounterX = 8;
+    var blocksCounterY = 5;
+
+    var blockWidth = 0;
+    var blockHeight = 15;
+
+    //создаем класс Block
+    class Block {
+      constructor(x, y, w, h, color, status) {
+            this.x = x; //начало отрисовки по оси х
+            this.y = y; //начало отрисовки по оси у
+            this.w = w; //ширина
+            this.h = h; //высота
+            this.color = color; // цвет
+            this.status = status; // true/false
+      }
+
+      // метод, который создает экземляр класса Block
+      static createBlock() {
+                return new Block(
+                0,
+                0,
+                blockWidth,
+                blockHeight,
+                'black',
+                true
+                )
+      }
+    };
+
+    //функция создает экземляры класса Block с различными статусами
+    function initBlocks(){
+      for (let y = 0; y < blocksCounterY; y++){
+        blocks[y]=[];
+        for (let x = 0; x < blocksCounterX; x++){
+          blocks[y].push(Block.createBlock());
+        }
+      }
+    }
+    initBlocks(); // создали 50 обьектов
+
+    function drawBlocks(){
+      for (let y = 0; y < blocksCounterY; y++){
+        for (let x = 0; x < blocksCounterX; x++){
+
+            blocks[y][x].x = x * secondaryCanvas.width/blocks[y].length;
+            blocks[y][x].y = y * blockHeight;
+            blocks[y][x].w = secondaryCanvas.width/blocks[y].length;
+
+            secondaryCtx.fillStyle = blocks[y][x].color;
+            secondaryCtx.fillRect(blocks[y][x].x, blocks[y][x].y, blocks[y][x].w, blocks[y][x].h);
+        }
+      }
+    }
+//--------------------------------------------------------------------------//
+
+    var score = 0; //переменная очков игры
+
+    function drawScore() {
+         secondaryCtx.font = "16px Arial";
+         secondaryCtx.fillStyle = "black";
+         secondaryCtx.fillText ("Score: " + score + " / " + blocksCounterX*blocksCounterY, secondaryCanvas.width/2-42, secondaryCanvas.height/2);
+     }
+
+//--------------------------------------------------------------------------//
+    //функция рандомного диапазона float
+    function getRandomArbitrary(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    //функция рандомного диапазона int
+    function getRandomIntInclusive(min, max) {
+      // случайное число от min до (max+1)
+      let rand = min + Math.random() * (max + 1 - min);
+      return Math.floor(rand);
+    }
+
+    //функция рисования квадрата
+    function drawFrame() {
+        requestAnimationFrame(drawFrame); //отрисовка
+        //secondaryCtx.clearRect(0, 0, secondaryCanvas.width, secondaryCanvas.height); //очистить весь холст
+        
+        secondaryCtx.fillStyle = 'white'; //очистить весь холст (делаем квадрат белым)
+        secondaryCtx.fillRect(0, 0, secondaryCanvas.width, secondaryCanvas.height); //очистить весь холст (растягиваем на всю ширину и длину)
+        drawScore(); //отрисовываем счетчик
+        drawPlatform(); //отрисовываем платформу
+
+//--------------------------------------------------------------------------//
+        //физика движения платформы
+        if(rightPressed && secondaryCanvas.width > platform.x+platform.width/2) {
+            platform.x += platform.dx;
+        }
+        else if(leftPressed && platform.x-platform.width/2>0) {
+            platform.x -= platform.dx;
+        }
+//--------------------------------------------------------------------------//
+
+
+//--------------------------------------------------------------------------//
+        //перебор квадратов в массиве squares
+        for(let i=0; i<squares.length; i++){
+         drawBlocks(); // отрисовываем верхние блоки
+         drawSquare(squares[i]); //отрисовываем квадрат, не забываем аргумент
+         //--------------------------------------------------------------------------//
+         //физика движения квадратов
+         if(squares[i].x + squares[i].dx > secondaryCanvas.width-squares[i].size || squares[i].x + squares[i].dx < 0) {
+              squares[i].dx = -squares[i].dx;
+              squares[i].color = colors[getRandomIntInclusive(1, colors.length)-1];
+          }
+          if(squares[i].y + squares[i].dy < 0) {
+              squares[i].dy = -squares[i].dy;
+              squares[i].color = colors[getRandomIntInclusive(1, colors.length)-1];
+          }
+          if(squares[i].y + squares[i].size > secondaryCanvas.height){
+            //squares[i].y = blockHeight*blocksCounterY; // квадрат появляется сверху (не выше высоты блока * на количество уровней)
+              alert('TRY AGAIN');
+              squares[i].y = blockHeight*blocksCounterY; //чтоб много раз не выскакивал алерт
+              location.reload(); //перезагрузка
+          }
+          //--------------------------------------------------------------------------//
+
+          //--------------------------------------------------------------------------//
+          //физика взаимодействия с платформой квадратов
+          //отбитие верхом платформы
+          if(
+            squares[i].y + squares[i].dy + squares[i].size > secondaryCanvas.height - platform.height && //считывание пика высоты платформы
+            squares[i].y + squares[i].dy + squares[i].size < secondaryCanvas.height && //считывание начала высоты платформы
+            squares[i].x + squares[i].dx > platform.x - platform.width/2 - squares[i].size &&//диапазон действия - ДО КОНЦА платформы по X
+            squares[i].x + squares[i].dx < platform.x + platform.width/2 //диапазон действия - ДО КОНЦА платформы по X
+
+            ) {
+              squares[i].dy = platform.dx; //задает скорость движения квадрата по Х такое же как у платформы и ПОЧЕМУ-ТО не зацикливается внутри платформы, а сразу отбивается вверх (???)
+              squares[i].dy = -squares[i].dy;
+          }
+          //--------------------------------------------------------------------------//
+          //физика взаимодействия квадрата с верхними блоками
+          
+          for (let y = 0; y < blocksCounterY; y++){
+            for (let x = 0; x < blocksCounterX; x++){
+              if(
+                squares[i].x > blocks[y][x].x && //координата X квадрата БОЛЬШЕ, чем координата X блока
+                squares[i].x < blocks[y][x].x + blocks[y][x].w && //координата X квадрата МЕНЬШЕ, чем  координата Х блока + его ширина
+                squares[i].y > blocks[y][x].y && //координата Y квадрата БОЛЬШЕ координата Y блока
+                squares[i].y < blocks[y][x].y + blocks[y][x].h && //координата Y квадрата меньше, чем координата Y блока + его высота
+                blocks[y][x].color === 'black' //блок не разбит (активный цвет - черный)
+                )
+              {
+                squares[i].dy = -squares[i].dy;
+                blocks[y][x].color = 'white';
+                score=score+1; //считаем очки за каждый разбитый блок
+              }
+              else if(blocks[y][x].color !== 'black'){
+                squares[i].dy = +squares[i].dy;
+              }
+              //если все блоки разбиты - побеждаем
+              if(score==blocksCounterX*blocksCounterY){
+                alert('YOU WIN!');
+                score=0; //чтоб алерт не выскакивал много раз
+                location.reload(); //перезагрузка
+              }
+            }
+          }
+
+          //--------------------------------------------------------------------------//
+
+          squares[i].x += squares[i].dx;
+          squares[i].y += squares[i].dy;
+
+          primaryCtx.drawImage(secondaryCanvas, 0, 0);
+
+        }
+    }
+
+    drawFrame();
+
+
+  }
+  </script>
+  <style type="text/css">
+      canvas {
+        border: 1px solid black;
+        background: #fff;
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+ </head>
+ <body onload="all();">
+   <canvas id="canvas" width="200" height="300"></canvas>
+ </body>
+</html>
