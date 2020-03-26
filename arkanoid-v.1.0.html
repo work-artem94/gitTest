@@ -15,7 +15,7 @@
     secondaryCanvas.height = primaryCanvas.height; //дублируем высоту главного полотна
 
     const squares = []; //здесь будут храниться экземляры класса Square. Количество определяем в numberOfSquares ниже
-
+    var blocks = []; //здесь будут храниться экземляры класса Block. Количество определяем в blocksCounterX * blocksCounterY ниже
 //--------------------------------------------------------------------------//
     //Настройка квадратов на поле
     const colors = ['black','red','green','orange', 'blue']; //массив цветов квадрата
@@ -28,6 +28,12 @@
     const minSquareTickY = -5; //минимальное смещение по оси Y за кадр (может быть отрицательным);
     const maxSquareTickY = 5; //минимальное смещение по оси Y за кадр (может быть отрицательным);
 
+    //Настройка блоков на поле
+    const blocksCounterX = 8;
+    const blocksCounterY = 5;
+    var blockHeight = 15;
+    var blockWidth = 0; //изменяется программно
+    
 //--------------------------------------------------------------------------//
 
 
@@ -47,7 +53,8 @@
       static createSquare() {
         return new Square(
           getRandomArbitrary(0, secondaryCanvas.width-maxSquareSize),
-          getRandomArbitrary(0, secondaryCanvas.height-maxSquareSize),
+          //getRandomArbitrary(0, secondaryCanvas.height-maxSquareSize),//рандомная позиция
+          blockHeight*blocksCounterY, //позиция сверху платформы после блоков
           getRandomArbitrary(minSquareTickX, maxSquareTickY),
           getRandomArbitrary(minSquareTickY, maxSquareTickY),
           getRandomArbitrary(minSquareSize, maxSquareSize),
@@ -113,7 +120,6 @@
       var relativeX = e.clientX - primaryCanvas.offsetLeft + 125;
       if(relativeX > platform.width && relativeX < primaryCanvas.width) {
         platform.x = relativeX - platform.width/2;
-        console.log(primaryCanvas.offsetLeft);
       }
     }
 
@@ -128,15 +134,6 @@
 
 
 //--------------------------------------------------------------------------//
-
-    var blocks = [];
-    //var blocksCounter = 5;
-
-    var blocksCounterX = 8;
-    var blocksCounterY = 5;
-
-    var blockWidth = 0;
-    var blockHeight = 15;
 
     //создаем класс Block
     class Block {
