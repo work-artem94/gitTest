@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <script type="application/javascript">
+
+  //Функция для вызова через $ синтаксис, как в JQuery
+  function $(selector){
+      return new MySelect(selector);
+  }
+
+  class MySelect{
+    constructor(selector){
+      this.elementList = document.querySelectorAll(selector);
+      console.log(this);
+    }
+
+    addClass(className){
+      for (let i = 0; i < this.elementList.length; i++){
+          let el = this.elementList[i];
+          el.classList.add(className);
+      }
+      return this;      
+    }
+
+    removeClass(className){
+      for (let i = 0; i < this.elementList.length; i++){
+          let el = this.elementList[i];
+          el.classList.remove(className);
+      }
+      return this;
+    }
+
+    text(value){
+      for (let i = 0; i < this.elementList.length; i++){
+          let el = this.elementList[i];
+          el.innerText += value;
+      }
+      return this;  
+    }
+
+    html(value){
+      for (let i = 0; i < this.elementList.length; i++){
+          let el = this.elementList[i];
+          el.innerHTML += value;
+      }
+      return this;
+    }
+
+    empty(){
+      for (let i = 0; i < this.elementList.length; i++){
+          let el = this.elementList[i];
+          el.innerHTML = "";
+      }
+      return this;
+    }
+  }
+
+  </script>
+  <style type="text/css">
+    div{
+      border: 1px solid black;
+      padding: 20px;
+      margin: 2px;
+    }
+    .new{
+      background-color: #eee;
+      font-style: italic;
+    }
+  </style>
+ </head>
+ <body>
+    <a href="#" onclick="$('div').addClass('new').text(' call chain');">$('div').addClass('new').text(' call chain');</a>
+    <br><br>
+    <a href="#" onclick="$('div').addClass('new');">addClass</a>
+    <br>
+    <a href="#" onclick="$('div').removeClass('new');">removeClass</a>
+    <br>
+    <a href="#" onclick="$('div').text('<p>new</p>');">text</a>
+    <br>
+    <a href="#" onclick="$('div').html('<p>new</p>');">html</a>
+    <br>
+    <a href="#" onclick="$('div').empty();">empty</a>
+    <div></div>
+    <div></div>
+    <div></div>
+ </body>
+</html>
