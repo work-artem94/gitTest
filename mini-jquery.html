@@ -6,8 +6,13 @@
 
   //MySelect - конструктор обьекта
   function MySelect(selector){
+      var time = performance.now();
+
       this.elementList = document.querySelectorAll(selector);
       console.log(this);
+
+      time = performance.now() - time;
+      console.log('Время выполнения = ', time);
   }
 
   //Добавить указанный класс ко всем элементам, выбранным объектом MySelect
